@@ -14,7 +14,7 @@
 ### Запуск проекта
 ```bash
 # 1. Клонировать репозиторий
-git clone https://github.com/your-repo/cafe_orders.git
+git clone https://github.com/ZmMurad/cafe_test_django
 
 # 2. Настроить окружение
 cp .env.example .env
