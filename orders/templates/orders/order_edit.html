@@ -1,0 +1,73 @@
+{% extends 'orders/base.html' %}
+{% load static %}
+
+{% block title %}Редактировать заказ #{{ order.id }}{% endblock title %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h4>Редактировать заказ</h4>
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            {% csrf_token %}
+
+            {{ order_form.as_p }}
+
+            <hr>
+
+            <h5>Блюда в заказе</h5>
+            {{ order_item_formset.management_form }}
+            <div id="order-items-container">
+                {% for form in order_item_formset %}
+                    <div class="order-item-form border p-2 mb-2">
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form.item.label_tag }}
+                                {{ form.item }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.quantity.label_tag }}
+                                {{ form.quantity }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.DELETE.label_tag }}
+                                {{ form.DELETE }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <button type="button" id="add-order-item" class="btn btn-success">Добавить блюдо</button>
+
+            <hr>
+
+            <h5>Создать новое блюдо</h5>
+            {{ item_form.as_p }}
+
+            <button type="submit" class="btn btn-success">Сохранить изменения</button>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let orderItemContainer = document.getElementById("order-items-container");
+        let addOrderItemButton = document.getElementById("add-order-item");
+        let totalForms = document.getElementById("id_order_items-TOTAL_FORMS");
+
+        addOrderItemButton.addEventListener("click", function () {
+            let formCount = parseInt(totalForms.value);
+            let newFormHtml = document.querySelectorAll(".order-item-form")[0].outerHTML;
+            let newForm = document.createElement("div");
+            newForm.innerHTML = newFormHtml.replace(/-0-/g, `-${formCount}-`);
+            newForm.innerHTML = newForm.innerHTML.replace(/id_order_items-0/g, `id_order_items-${formCount}`);
+            orderItemContainer.appendChild(newForm);
+            totalForms.value = formCount + 1;
+        });
+    });
+</script>
+
+{% endblock content %}

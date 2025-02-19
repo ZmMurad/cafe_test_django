@@ -1,0 +1,139 @@
+{% extends 'orders/base.html' %}
+{% load static %}
+
+{% block title %}Создать заказ{% endblock title %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h4>Создать заказ</h4>
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                {{ order_form.table_number.label_tag }}
+                {{ order_form.table_number }}
+            </div>
+            <div class="mb-3">
+                {{ order_form.status.label_tag }}
+                {{ order_form.status }}
+            </div>
+
+            <hr>
+
+            <h5>Добавить блюда в заказ</h5>
+            {{ order_item_formset.management_form }}
+            <div id="order-items-container">
+                {% for form in order_item_formset %}
+                    <div class="order-item-form border p-2 mb-2">
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form.item.label_tag }}
+                                {{ form.item }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.quantity.label_tag }}
+                                {{ form.quantity }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.DELETE.label_tag }}
+                                {{ form.DELETE }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <button type="button" id="add-order-item" class="btn btn-success">Добавить блюдо</button>
+
+            <hr>
+
+            <h5>Создать новое блюдо</h5>
+            <div id="new-items-container">
+                <div class="new-item-form border p-2 mb-2">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <label for="new_item_name_0">Название</label>
+                            <input type="text" name="new_item_name[]" class="form-control">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="new_item_price_0">Цена</label>
+                            <input type="number" name="new_item_price[]" class="form-control" min="0">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="new_item_quantity_0">Кол-во</label>
+                            <input type="number" name="new_item_quantity[]" class="form-control" min="1" value="1">
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="button" class="btn btn-danger remove-new-item">Удалить</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" id="add-new-item" class="btn btn-info mt-2">Добавить новое блюдо</button>
+
+            <hr>
+
+            <button type="submit" class="btn btn-primary">Создать заказ</button>
+            <a href="{% url 'orders:order_list' %}" class="btn btn-secondary">Отмена</a>
+        </form>
+    </div>
+</div>
+
+<!-- JavaScript взял с интернета, не силен в frontend-->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let orderItemContainer = document.getElementById("order-items-container");
+        let addOrderItemButton = document.getElementById("add-order-item");
+        let totalForms = document.getElementById("id_order_items-TOTAL_FORMS");
+
+        addOrderItemButton.addEventListener("click", function () {
+            let formCount = parseInt(totalForms.value);
+            let newFormHtml = document.querySelectorAll(".order-item-form")[0].outerHTML;
+            let newForm = document.createElement("div");
+            newForm.innerHTML = newFormHtml.replace(/-0-/g, `-${formCount}-`);
+            newForm.innerHTML = newForm.innerHTML.replace(/id_order_items-0/g, `id_order_items-${formCount}`);
+            orderItemContainer.appendChild(newForm);
+            totalForms.value = formCount + 1;
+        });
+
+        let newItemsContainer = document.getElementById("new-items-container");
+        let addNewItemButton = document.getElementById("add-new-item");
+
+        addNewItemButton.addEventListener("click", function () {
+            let newItemCount = document.querySelectorAll(".new-item-form").length;
+            let newItemHtml = `
+                <div class="new-item-form border p-2 mb-2">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <input type="text" name="new_item_name[]" class="form-control" placeholder="Название блюда">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" name="new_item_price[]" class="form-control" min="0" placeholder="Цена">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="number" name="new_item_quantity[]" class="form-control" min="1" value="1" placeholder="Кол-во">
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="button" class="btn btn-danger remove-new-item">Удалить</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            let newItem = document.createElement("div");
+            newItem.innerHTML = newItemHtml;
+            newItemsContainer.appendChild(newItem);
+        });
+
+        newItemsContainer.addEventListener("click", function (event) {
+            if (event.target.classList.contains("remove-new-item")) {
+                event.target.closest(".new-item-form").remove();
+            }
+        });
+    });
+</script>
+
+{% endblock content %}
