@@ -1,0 +1,51 @@
+{% extends 'orders/base.html' %}
+{% block title %} Детали заказа {{ order.id }} {% endblock title %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    Заказ #{{ order.id }}
+  </div>
+  <div class="card-body">
+    <h5 class="card-title">Стол: {{ order.table_number }}</h5>
+    <p class="card-text">
+      <strong>Статус:</strong> 
+      {% if order.status == "pending" %}
+          <span class="badge bg-warning">В ожидании</span>
+      {% elif order.status == "ready" %}
+          <span class="badge bg-primary">Готово</span>
+      {% elif order.status == "paid" %}
+          <span class="badge bg-success">Оплачено</span>
+      {% else %}
+          <span class="badge bg-secondary">{{ order.status }}</span>
+      {% endif %}
+    </p>
+    <p class="card-text"><strong>Общая стоимость:</strong> {{ order.total_price }}</p>
+    <a href="{% url 'orders:order_edit' order.id %}" class="btn btn-warning">Редактировать</a>
+    <a href="{% url 'orders:order_list' %}" class="btn btn-secondary">Вернуться к списку</a>
+  </div>
+</div>
+
+<hr>
+
+<h4>Заказанные блюда:</h4>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Название</th>
+      <th>Цена</th>
+      <th>Количество</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for order_item in items %}
+    <tr>
+      <td>{{ order_item.item.item_name }}</td>
+      <td>{{ order_item.item.item_price }}</td>
+      <td>{{ order_item.quantity }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% endblock content %}

@@ -1,0 +1,18 @@
+{% extends 'orders/base.html' %}
+{% load static %}
+
+{% block title %}Общая выручка{% endblock title %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h4>Общая выручка (по оплаченных заказам)</h4>
+    </div>
+    <div class="card-body">
+        <p class="fs-4">
+            <strong>Выручка:</strong> {{ revenue|floatformat:2 }} руб.
+        </p>
+        <a href="{% url 'orders:order_list' %}" class="btn btn-secondary">Вернуться к списку заказов</a>
+    </div>
+</div>
+{% endblock content %}
