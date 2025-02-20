@@ -13,6 +13,8 @@ class OrderCreateForm(forms.ModelForm):
 
 class ItemCreateForm(forms.ModelForm):
     """Форма для создания нового блюда"""
+    item_name = forms.CharField(required=False, label="Название блюда")
+    item_price = forms.DecimalField(required=False, label="Цена (руб)", min_value=0)
 
     class Meta:
         model = Item

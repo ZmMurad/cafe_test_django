@@ -103,9 +103,10 @@ def order_edit(request, pk):
             order_form.save()
             if order_item_formset.is_valid():
                 order_item_formset.save()
-
-            if item_form.is_valid():
-                new_item = item_form.save()
+            new_item_name = request.POST.get('item_name')
+            new_item_price = request.POST.get('item_price')
+            if new_item_name and new_item_price:
+                new_item = Item.objects.create(item_name=new_item_name, item_price=new_item_price)
                 quantity = request.POST.get('new_item_quantity', 1)
                 OrderItem.objects.create(order=order, item=new_item, quantity=quantity)
 
